@@ -20,21 +20,22 @@ def main(config_file):
     device = setup_training_device()
     train_loader, test_loader = load_dataset(config)
     width_to_results, data_path = setup_experiment_path(config)
+    input_size = config["Dataset"]['Input size']['x'] * config["Dataset"]['Input size']['y']
             
     for j in range(num_experiments):
         for i, width in enumerate(x_width):
             print(width)
-            net = TwoLayersNN(width=width, input_size=10*10).cuda()
+            net = TwoLayersNN(width=width, input_size=input_size).cuda()
             test_loss, train_loss, x_alpha = train(net, train_loader, test_loader, epochs, lr)
                 
-            results = width_to_results[width]
+            results = width_to_results[str(width)]
             results["loss test"].append(test_loss)
             results["loss train"].append(train_loss)
             results["complexity"].append(compute_complexity(net, train_loader, test_loader, device=device))
             if len(x_alpha) > 0:
                 results["alpha"].append(np.mean(x_alpha))
             results["number of parameters"] = sum(parameter.numel() for parameter in net.parameters() if parameter.requires_grad)
-            width_to_results[width] = results
+            width_to_results[str(width)] = results
             with open(data_path, "w") as fp:
                 json.dump(width_to_results , fp) 
 
@@ -47,18 +48,18 @@ def setup_experiment_path(config):
         os.makedirs(experiment_path)
     
     try:
-        with open(data_path, 'r') as file:
+        with open(data_path, 'r') as file:              ### It does not work ??
             width_to_results = json.load(file)
     except:
         width_to_results = {}
 
     for width in x_widths:
-        if width not in width_to_results.keys():
-                width_to_results[width] = {"loss test" : [],
-                                           "loss train" : [],
-                                           "complexity" : [],
-                                           "alpha" : [],
-                                           "number of parameters" : 0}
+        if str(width) not in width_to_results.keys():
+            width_to_results[str(width)] = {"loss test" : [],
+                                       "loss train" : [],
+                                       "complexity" : [],
+                                       "alpha" : [],
+                                       "number of parameters" : 0}
 
     return width_to_results, data_path
 
@@ -69,7 +70,14 @@ def load_dataset(config):
                                                        noise_level=config["Dataset"]["Noise level"], 
                                                        downsample_size=(config["Dataset"]['Input size']['x'], 
                                                                         config["Dataset"]['Input size']['y']))
-        
+    if config["Dataset"]["Name"] == "MNIST 0 vs 8":
+        train_loader, test_loader = preprocess_MNIST(n_train=config["Dataset"]["Train set size"],
+                                                     n_test=config["Dataset"]["Test set size"],
+                                                     batch_size=config["Dataset"]["Batch size"],
+                                                     noise_level=config["Dataset"]["Noise level"], 
+                                                     downsample_size=(config["Dataset"]['Input size']['x'], 
+                                                                    config["Dataset"]['Input size']['y']))
+
     return train_loader, test_loader
 
 def setup_training_device():
