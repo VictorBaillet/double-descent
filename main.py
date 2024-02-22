@@ -7,11 +7,11 @@ from utils.ntk import *
 from utils.utils import *
 
 def main(config_file):
-    # Load the configuration file
+    ## Load the configuration file
     with open(config_file, 'r') as file:
         config = json.load(file)
 
-    # Extract configuration settings
+    ## Extract configuration settings
     num_experiments = config['General']['Number of experiments']
     x_width = config['Model']['Network width']
     epochs = config['Model']['Number of epochs']
@@ -21,7 +21,8 @@ def main(config_file):
     train_loader, test_loader = load_dataset(config)
     width_to_results, data_path = setup_experiment_path(config)
     input_size = config["Dataset"]['Input size']['x'] * config["Dataset"]['Input size']['y']
-            
+
+    ## Run the experiments     
     for j in range(num_experiments):
         for i, width in enumerate(x_width):
             print(width)
@@ -48,7 +49,7 @@ def setup_experiment_path(config):
         os.makedirs(experiment_path)
     
     try:
-        with open(data_path, 'r') as file:              ### It does not work ??
+        with open(data_path, 'r') as file:              
             width_to_results = json.load(file)
     except:
         width_to_results = {}
@@ -85,7 +86,6 @@ def setup_training_device():
 
     print(f"CUDA disponible : {cuda_available}")
     
-    # Affiche également le nombre de GPU disponibles et leur nom si CUDA est disponible
     if cuda_available:
         print(f"Nombre de GPU disponibles : {torch.cuda.device_count()}")
         for i in range(torch.cuda.device_count()):

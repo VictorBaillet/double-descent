@@ -4,6 +4,7 @@ import torchvision
 import torchvision.transforms as transforms
 from sklearn.model_selection import train_test_split
 import pickle
+import json
 
 import random
 
@@ -187,3 +188,31 @@ def load(filename):
 def save(file, filename):
     with open("data/" + filename, "wb") as fp:   #Pickling
         pickle.dump(file, fp)
+
+def unpack_results(config):
+    experiment_path = r'results/' +  config['General']['Name']
+    data_path = experiment_path + '/' + config['General']['Sub Name'] + ".json"
+    with open(data_path, 'r') as file:
+        width_to_results = json.load(file)
+    x_loss_train = []
+    x_loss_test = []
+    x_complexity = []
+    x_alpha = []
+    x_parameter_count = []
+    x_width = np.sort(np.array(list(width_to_results.keys()), dtype=int))
+    
+    for width in x_width:
+        results = width_to_results[str(width)]
+        if len(results["loss train"]) > 0:
+            x_loss_train.append(np.mean(results["loss train"]))
+            x_loss_test.append(np.median(results["loss test"]))
+            try:
+                x_complexity.append(np.median(np.array(results["complexity"])[:,0]))
+            except:
+                ""
+            try:
+                x_alpha.append(np.median(np.array(results["alpha"])))
+            except:
+                ""
+
+    return x_loss_train, x_loss_test, x_complexity, x_width, x_alpha
