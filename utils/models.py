@@ -1,3 +1,9 @@
+"""
+This script includes a two-layer neural network class definition and functions for training and evaluating the model. 
+
+Author: Victor Baillet
+Repository: https://github.com/VictorBaillet/double-descent
+"""
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,6 +13,14 @@ import random
 
 
 class TwoLayersNN(nn.Module):
+    """
+    A simple two-layer neural network class.
+
+    Attributes:
+    input_size (int): The size of the input features.
+    fc1 (nn.Linear): First fully connected layer.
+    fc2 (nn.Linear): Second fully connected layer.
+    """
     def __init__(self, width=512, input_size=28*28, output_bias=False):
         super(TwoLayersNN, self).__init__()
         self.input_size = input_size

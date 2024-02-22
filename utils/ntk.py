@@ -1,8 +1,18 @@
+"""
+This file contains functions for computing Neural Tangent Kernel feature vectors and matrices, and calculating the complexity of a neural network model using these features.
+
+Author: Victor Baillet
+Repository: https://github.com/VictorBaillet/double-descent
+"""
+
 import torch
 import numpy as np
 import gc
 
 def compute_feature_vector(net, y, device):
+    """
+    Compute the Neural Tangent Kernel feature vector for a given input.
+    """
     y = y.to(device).requires_grad_(True)
     output_y = net(y)
     grad_y = torch.autograd.grad(outputs=output_y, 
@@ -14,7 +24,10 @@ def compute_feature_vector(net, y, device):
     return grad_y_vector
 
 def compute_feature_matrix(net, train_loader, device):
-    net.eval()  # Evaluation mode
+    """
+    Compute the Neural Tangent Kernel feature matrix for a training dataset.
+    """
+    net.eval() 
     net.to(device)
 
     gradients = []
@@ -38,12 +51,27 @@ def compute_feature_matrix(net, train_loader, device):
     return phi
 
 def compute_matrix_pseudo_inverse(phi):
+    """
+    Compute the pseudo-inverse of the input matrix.
+    """
     phi_phi_t_pinv = torch.pinverse(phi)
     del phi
     gc.collect()
     return phi_phi_t_pinv
 
 def compute_complexity(net, train_loader, test_loader, device):
+    """
+    Compute the complexity/number of effective parameters of a neural network model.
+
+    Parameters:
+    net (torch.nn.Module): The neural network model.
+    train_loader (torch.utils.data.DataLoader): DataLoader for training data.
+    test_loader (torch.utils.data.DataLoader): DataLoader for test data.
+    device (torch.device): The device to perform computation on.
+
+    Returns:
+    list: Median and mean of the complexity measure.
+    """
     phi = compute_feature_matrix(net, train_loader, device)
     inverse = compute_matrix_pseudo_inverse(phi)
     phi = None
