@@ -1,6 +1,6 @@
 # Kernel-Based Complexity Measure for the Study of Double Descent in Neural Networks
 
-We investigate double descent phenomena in neural networks, using a novel kernel-based complexity measure. Building upon the work of Curth et al. 2023.
+We investigate double descent phenomena in neural networks, using a novel kernel-based complexity measure. Building upon the work of [Curth et al. 2023](https://arxiv.org/abs/2310.18988)
 
 ## Installation 
 
