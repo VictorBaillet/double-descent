@@ -30,27 +30,6 @@ class TwoLayersNN(nn.Module):
                 if m.bias is not None:
                     m.bias.data.fill_(0.01)
 
-"""
-def train(model, train_loader, test_loader, epochs=2000, lr=0.01, momentum=0.95):
-    criterion = nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-
-    for epoch in range(epochs):
-        clear_output(wait=True)
-        model.train()
-        running_loss = sum(
-            train_step(data, model, criterion, optimizer)
-            for data in train_loader
-        ) / len(train_loader)
-        if (epoch + 1) % 200 == 0:
-            clear_output(wait=True)
-            print(f'Epoch {epoch + 1}/{epochs} - Loss: {running_loss:.7f}')
-            test_loss = evaluate(model, test_loader, criterion)
-            print(f'Test Loss: {test_loss:.7f}')
-
-    print('Finished Training')
-    return test_loss, running_loss
-"""
 
 def train(model, train_loader, test_loader, epochs=2000, lr=0.01, momentum=0.95):
     criterion = nn.MSELoss()
